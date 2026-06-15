@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,9 +23,9 @@ export default function MobileMenu() {
 
       {isOpen && (
         <div className="absolute top-16 left-0 w-full bg-white border-b border-gray-200 shadow-lg py-4 px-6 flex flex-col gap-4 animate-fadeIn">
-          <button className="bg-primary text-white px-8 py-4 rounded-md hover:bg-primary-700 transition w-full">
+          <Link href="/form" className="bg-primary text-white px-8 py-4 rounded-md hover:bg-primary-700 transition w-full">
             Começar
-          </button>
+          </Link>
         </div>
       )}
     </div>
