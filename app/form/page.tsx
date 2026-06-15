@@ -15,7 +15,7 @@ export default function FormPage() {
   }
 
   return(
-    <div className="bg-primary h-screen">
+    <div>
       <form onSubmit={onSubmitHandler} className="bg-gray-300 text-black p-4">
         <div className="flex flex-col gap-2">
           <label htmlFor="idioma">Qual idioma você quer aprender?</label>

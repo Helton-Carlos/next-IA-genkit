@@ -6,7 +6,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR">
       <body>
         <Header />
-        <main>{children}</main>
+        <main className='bg-primary h-screen'>{children}</main>
       </body>
     </html>
   )

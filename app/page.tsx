@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="bg-primary h-screen">
+    <>
       <main className="mx-auto max-w-2xl">
         <div className="py-8 text-center">
           <h3 className="text-4xl font-bold uppercase mt-8">
@@ -24,6 +24,6 @@ export default function Home() {
           className="w-full mx-auto max-w-[250px] sm:max-w-[350px] md:max-w-[500px] lg:max-w-[700px] h-auto"
         />
       </main>
-    </div >
+    </ >
   );
 }
