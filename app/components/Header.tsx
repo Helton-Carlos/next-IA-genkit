@@ -19,9 +19,11 @@ export default function Header() {
         </div>
 
         <div className="hidden md:flex items-center">
-          <button className="bg-primary text-white px-8 py-2 rounded-md text-sm font-bold cursor-pointer hover:bg-primary-700 transition shadow-sm hover:shadow-md">
-            Começar
-          </button>
+          <Link href="/form" 
+            className="bg-primary text-white px-8 py-2 rounded-md text-sm font-bold cursor-pointer hover:bg-primary-700 transition shadow-sm hover:shadow-md"
+          >
+             Começar
+          </Link>
         </div>
 
         <MobileMenu />
