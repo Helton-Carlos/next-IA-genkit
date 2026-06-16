@@ -2,6 +2,7 @@
 
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 interface RootState {
   form: {
@@ -14,6 +15,10 @@ interface RootState {
 export default function ChatPage() {
   const { nome, idioma, nivel } = useSelector((state: RootState) => state.form);
 
+  useEffect(()=>{
+    console.log(nome, nivel)
+  })
+
   return (
     <div className="py-8 px-4 max-w-md mx-auto">
       <div className="my-4">
@@ -24,19 +29,11 @@ export default function ChatPage() {
 
       <div className='bg-amber-50 p-4 rounded-md text-black shadow-md'>
         <h2 className="text-xl font-bold mb-2">Bem-vindo ao Chat!</h2>
-        
-        {nome ? (
-          <div className="space-y-1">
-            <p><strong>Usuário:</strong> {nome}</p>
-            <p><strong>Idioma escolhido:</strong> {idioma}</p>
-            <p><strong>Nível atual:</strong> {nivel.toUpperCase()}</p>
-          </div>
-        ) : (
-          <p className="text-gray-500">Nenhum dado encontrado. Volte e preencha o formulário.</p>
-        )}
-      </div>
 
-     
+        <h4 className="text-2xl font-bold mb-2">
+          {idioma === "english"? "LET'S TALK!" : "¡HABLEMOS!"}
+        </h4>
+      </div>
     </div>
   )
 }
