@@ -27,7 +27,13 @@ export default function FormPage() {
   }
 
   return (
-    <div className="py-8 px-4">
+   <div className="py-8 px-4 max-w-md mx-auto">
+      <div className="my-4">
+        <Link href="/" className="text-white hover:underline font-semibold">
+          ← Voltar 
+        </Link>
+      </div>
+
       <form onSubmit={handleSubmit} className="bg-gray-300 max-w-120 text-black mx-auto p-4 rounded-md">
         <h3 className="text-2xl font-bold mb-4">Responda o formulário</h3>
         
@@ -78,15 +84,9 @@ export default function FormPage() {
           />
         </div>
 
-        <div className="flex items-center gap-8 hover:underline">
-          <Link href="/" className="font-bold">
-            Voltar
-          </Link>
-
-          <button className="btn" type="submit">
-            Vamos lá
-          </button>
-        </div>
+        <button className="btn w-full" type="submit">
+          Vamos lá 
+        </button>
       </form>
     </div>
   )
