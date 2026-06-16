@@ -2,28 +2,33 @@
 
 import { useRouter } from "next/navigation" 
 import Link from "next/link"
+import React from "react"
+import { useSelector, useDispatch } from 'react-redux';
+import { updateField, FormState } from '@/app/store/formSlice';
 
 export default function FormPage() {
-  const router = useRouter() 
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const formData = useSelector((state) => state.form);
 
-  function onSubmitHandler(e: React.FormEvent<HTMLFormElement>) {
+  function handleChange (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    const { name, value } = e.target;
+    
+    dispatch(updateField({ 
+      field: name as keyof FormState, 
+      value 
+    }));
+  }
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault() 
     
-    const formData = new FormData(e.currentTarget)
-    
-    const dados = {
-      idioma: formData.get("idioma"),
-      nivel: formData.get("nivel"),
-      nome: formData.get("nome"),
-    }
-
-    console.log(dados)
     router.push("/chat")
   }
 
   return (
     <div className="py-8 px-4">
-      <form onSubmit={onSubmitHandler} className="bg-gray-300 max-w-120 text-black mx-auto p-4 rounded-md">
+      <form onSubmit={handleSubmit} className="bg-gray-300 max-w-120 text-black mx-auto p-4 rounded-md">
         <h3 className="text-2xl font-bold mb-4">Responda o formulário</h3>
         
         <div className="flex flex-col gap-2">
@@ -31,6 +36,8 @@ export default function FormPage() {
           <select 
             name="idioma" 
             id="idioma"
+            value={formData.idioma}
+            onChange={handleChange}
             className="bg-white p-2 rounded-md border border-gray-300 focus:border-primary focus:outline-none"
           >
             <option value="">Selecione uma opção</option>
@@ -44,6 +51,8 @@ export default function FormPage() {
           <select 
             name="nivel" 
             id="nivel"
+            value={formData.nivel}
+            onChange={handleChange}
             className="bg-white p-2 rounded-md border border-gray-300 focus:border-primary focus:outline-none"
           >
             <option value="">Selecione uma opção</option>
@@ -62,6 +71,8 @@ export default function FormPage() {
             type="text" 
             name="nome" 
             id="nome"
+            value={formData.nome}
+            onChange={handleChange}
             placeholder="ex: João, Maria, outros..." 
             className="bg-white p-2 rounded-md border border-gray-300 focus:border-primary focus:outline-none"  
           />
