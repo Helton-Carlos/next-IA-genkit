@@ -2,6 +2,8 @@
 
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
+import { menuSuggestionFlow } from '../lib/genkit';
+import { streamFlow } from '@genkit-ai/next/client';
 import Link from 'next/link';
 
 interface RootState {
@@ -13,30 +15,37 @@ interface RootState {
 }
 
 export default function ChatPage() {
-  const [formValues, setFormValues] = useState([]);
-  const { idioma, nivel, nome } = useSelector((state: RootState) => state.form);
+  const [context, setContext] = useState('');
+  const [genkit, setGenkit] = useState<string | null>(null);
+  const value = useSelector((state: RootState) => state.form);
 
-  const buscarDados = async () => {
-    const res = await fetch('/api/genkit');
-    const dados = await res.json();
-
-    setFormValues(dados);
+  const languages = value.idioma === "english" ? { 
+      title: "LET'S TALK!", 
+      input: "write here...",
+      button: "generate"
+    } 
+  : { 
+      title: "¡HABLEMOS!", 
+      input: "Escribe aquí...",     
+      button: "generar" 
   };
 
-  const handleCadastrar = async () => {
-    const res = await fetch('/api/genkit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idioma, nivel, nome }),
-    });
+  async function handleGenerate() {
+    try {
+      setGenkit('');
 
-    if (res.ok) {
-      buscarDados();
-    } else {
-      const erro = await res.json();
-      alert(erro.erro);
+      const chat = { context, ...value };
+
+      const result = await streamFlow<typeof menuSuggestionFlow>({
+        url: '/api/genkit',
+        input: { chat },
+      });
+
+      return await result.output; 
+    } catch(e) {
+      console.error(`erro messagem: ${e}`)
     }
-  };
+  }
 
   return (
     <div className="py-8 px-4 max-w-md mx-auto">
@@ -49,21 +58,23 @@ export default function ChatPage() {
       <div className='bg-amber-50 p-4 rounded-md text-black shadow-md'>
         <h2 className="text-xl font-bold mb-2">Bem-vindo ao Chat!</h2>
 
-        <div className='flex justify-between'>
-          <h4 className="text-2xl font-bold mb-2">
-            {idioma === "english"? "LET'S TALK!" : "¡HABLEMOS!"}
-          </h4>
+        <h4 className="text-2xl font-bold mb-2">
+          {languages.title}
+        </h4>
 
-          <button className='btn' onClick={()=>handleCadastrar()}>Iniciar</button>
-        </div>
+        <textarea 
+          value={context} 
+          onChange={(e) => setContext(e.target.value)}
+          placeholder={languages.input}
+          className="p-2 mr-2 w-full h-45 text-black border focus:-outline focus:outline-primary"
+        />
 
-        <div style={{ paddingTop: '20px' }}>
-          <h2>Testando API:</h2>
-          <ul>
-            {formValues.map((item) => (
-              <li key={item.id}>idioma - {item.idioma} - nivel {item.nivel} - nome: {item.nome}</li>
-            ))}
-          </ul>
+        <button onClick={handleGenerate} className="btn uppercase mt-2">
+          {languages.button}
+        </button>
+
+        <div className='mt-4'>
+          <p>{genkit}</p>
         </div>
       </div>
     </div>
