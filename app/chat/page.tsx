@@ -2,7 +2,6 @@
 
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
-import { menuSuggestionFlow } from '../lib/genkit';
 import { streamFlow } from '@genkit-ai/next/client';
 import Link from 'next/link';
 
@@ -16,7 +15,7 @@ interface RootState {
 
 export default function ChatPage() {
   const [context, setContext] = useState('');
-  const [genkit, setGenkit] = useState<string | null>(null);
+  const [genkit, setGenkit] = useState<string>(''); 
   const value = useSelector((state: RootState) => state.form);
 
   const languages = value.idioma === "english" ? { 
@@ -32,18 +31,39 @@ export default function ChatPage() {
 
   async function handleGenerate() {
     try {
-      setGenkit('');
+      setGenkit(''); 
 
       const chat = { context, ...value };
 
-      const result = await streamFlow<typeof menuSuggestionFlow>({
+      const result = await streamFlow({
         url: '/api/genkit',
         input: { chat },
       });
 
-      return await result.output; 
+      for await (const chunk of result.stream) {
+        if (typeof chunk === 'string') {
+          setGenkit((prev) => prev + chunk);
+        } else if (chunk && typeof chunk === 'object') {
+          if ('message' in chunk && typeof chunk.message === 'string') {
+            setGenkit((prev) => prev + chunk.message);
+          } 
+          else if ('output' in chunk && typeof chunk.output === 'string') {
+            setGenkit((prev) => prev + chunk.output);
+          }
+        }
+      }
+
+      const finalResult = await result.output;
+      
+      if (finalResult?.result?.menuItem) {
+        setGenkit(finalResult.result.menuItem);
+      } else if (typeof finalResult === 'string') {
+        setGenkit(finalResult);
+      }
     } catch(e) {
-      console.error(`erro messagem: ${e}`)
+      console.error(`Erro na geração: ${e}`);
+    } finally {
+      setContext('')
     }
   }
 
@@ -66,15 +86,17 @@ export default function ChatPage() {
           value={context} 
           onChange={(e) => setContext(e.target.value)}
           placeholder={languages.input}
-          className="p-2 mr-2 w-full h-45 text-black border focus:-outline focus:outline-primary"
+          className="p-2 mr-2 w-full h-45 text-black border focus:outline-none focus:outline-primary"
         />
 
-        <button onClick={handleGenerate} className="btn uppercase mt-2">
+        <button onClick={handleGenerate} className="btn uppercase mt-2 bg-blue-600 text-white p-2 rounded">
           {languages.button}
         </button>
 
-        <div className='mt-4'>
-          <p>{genkit}</p>
+        <div className='mt-4 p-2 bg-white rounded border'>
+          <p className="whitespace-pre-wrap text-sm text-gray-800">
+            {genkit || "Aguardando geração..."}
+          </p>
         </div>
       </div>
     </div>
